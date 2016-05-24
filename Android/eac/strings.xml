@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">EAC</string>
+    <string name="eac358">EAC 358</string>
+    <string name="state">EAC 358 bits benchmark</string>
+    <string name="eac_com_ok">Completed, MULT: kP OK</string>
+    <string name="eac_com_ko">Completed, MULT: kP not OK</string>
+</resources>

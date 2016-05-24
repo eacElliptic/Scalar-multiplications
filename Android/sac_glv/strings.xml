@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">GLV_SAC</string>
+    <string name="sglv256">SGLV 256</string>
+    <string name="state">GLV-SAC 256 bits benchmark</string>
+    <string name="sglv_com_ok">Completed, MULT: kP OK</string>
+    <string name="sglv_com_ko">Completed, MULT: kP not OK</string>
+</resources>

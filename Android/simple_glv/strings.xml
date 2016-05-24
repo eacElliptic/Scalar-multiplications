@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Simple_GLV</string>
+    <string name="glv256">GLV 256</string>
+    <string name="state">GLV 256 bits benchmark</string>
+    <string name="glv_com_ok">Completed, MULT: kP OK</string>
+    <string name="glv_com_ko">Completed, MULT: kP not OK</string>
+</resources>
