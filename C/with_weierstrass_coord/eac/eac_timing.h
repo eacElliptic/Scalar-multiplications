@@ -7,9 +7,8 @@
 static mpz_t beta, ca, cb;
 
 
-static void init_datas(Point *p0p1);
-
-static void go(Point *p0p1, int nbiter);
+static void init_datas(Point *P);
+static void go(Point *P, int nbiter);
 
 static void print_eac(uchar *eac, int eac_len);
 

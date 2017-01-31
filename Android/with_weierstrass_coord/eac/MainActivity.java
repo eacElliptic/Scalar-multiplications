@@ -2,7 +2,6 @@ package fr.android.bri.eac;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Debug;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -20,7 +19,7 @@ public class MainActivity extends Activity implements SeekBar.OnSeekBarChangeLis
     private TextView iteration, state;
     private int nbiter = 1;
 
-    private Point []p0p1;
+    private Point P;
     private BigInteger beta, a, b;
 
     @Override
@@ -34,8 +33,6 @@ public class MainActivity extends Activity implements SeekBar.OnSeekBarChangeLis
         iteration = (TextView) findViewById(R.id.nbiter);
 
         state = (TextView) findViewById(R.id.state);
-
-        p0p1 = new Point[2];
 
         init();
     }
@@ -64,8 +61,10 @@ public class MainActivity extends Activity implements SeekBar.OnSeekBarChangeLis
         beta = new BigInteger("2");
         beta = beta.modPow(p.subtract(ONE).divide(new BigInteger("3")), p);
 
-        p0p1[0] = new Point(X, Y, p);
-        if (p0p1[0].isOnCurve(a, b))
+		/* P represents point P itself and the point Phi_P */
+		/* see Point.java for class definition */
+        P = new Point(X, Y, p);
+        if (P.isOnCurve(0, a, b))
             Toast.makeText(this, "P OK", Toast.LENGTH_SHORT).show();
     }
 
@@ -83,48 +82,33 @@ public class MainActivity extends Activity implements SeekBar.OnSeekBarChangeLis
 
         diff1=0;
 
-        p0p1[1] = new Point();
-
-
-        //        Debug.startMethodTracing("ted_glvtrace");
-        Debug.startMethodTracing("eac_l256_", 1950*1024*1024);
 
         for (i = 0; i < nbiter; i++) {
-            Point.Z = ONE;
+            P.Z = ONE;
             /* we compute PHI_P */
-            p0p1[1].X = p0p1[0].X.multiply(beta).mod(Point.p);
-            p0p1[1].Y = p0p1[0].Y;
-
+            P.PQ[1] = P.PQ[0].multiply(beta).mod(Point.p);
+            P.PQ[3] = P.PQ[2];
             for (j = 0; j < eac_len; j++)
                 eac[j] = (byte) rg.nextInt(2);
             /* coordinates of P are updated so that at the end of the method */
             /* P contains ((k-t)P, kP) for some integer t */
+            at = System.currentTimeMillis();
+            P.PointFromEAC(eac);
+            bt = System.currentTimeMillis();
+            diff1+=(bt-at);
 
-
-//            at = System.currentTimeMillis();
-
-
-            Point.pointFromEAC(p0p1, eac);
-
-
-//            bt = System.currentTimeMillis();
-//            diff1+=(bt-at);
-//
-            ZZ = Point.Z.modInverse(Point.p);
+            ZZ = P.Z.modInverse(Point.p);
             /* P is transformed in affine coordinates for next iteration */
-            p0p1[0].X = p0p1[0].X.multiply(ZZ).multiply(ZZ).mod(Point.p);
-            p0p1[0].Y = p0p1[0].Y.multiply(ZZ).multiply(ZZ).multiply(ZZ).mod(Point.p);
+            P.PQ[0] = P.PQ[0].multiply(ZZ).multiply(ZZ).mod(Point.p);
+            P.PQ[2] = P.PQ[2].multiply(ZZ).multiply(ZZ).multiply(ZZ).mod(Point.p);
         }
 
-
-        Debug.stopMethodTracing();
-
-        if (p0p1[1].isOnCurve(a, b)) {
+        if (P.isOnCurve(1, a, b)) {
 
             state.setText("Completed, MULT: kP OK\nTime in milliseconds: " + diff1);
         }
         else {
-            state.setText("Completed, MULT: kP non OK\nTime in milliseconds: " + diff1);
+            state.setText("Completed, MULT: kP not OK\nTime in milliseconds: " + diff1);
         }
     }
 
